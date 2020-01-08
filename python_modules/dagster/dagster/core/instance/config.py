@@ -7,9 +7,8 @@ from dagster.core.types import String
 from dagster.core.types.config import Field, PermissiveDict
 from dagster.core.types.config.evaluator.validate import validate_config
 from dagster.utils import merge_dicts
+from dagster.utils.config import DAGSTER_CONFIG_YAML_FILENAME
 from dagster.utils.yaml_utils import load_yaml_from_globs
-
-DAGSTER_CONFIG_YAML_FILENAME = "dagster.yaml"
 
 
 def dagster_instance_config(base_dir, config_filename=DAGSTER_CONFIG_YAML_FILENAME, overrides=None):
@@ -17,8 +16,11 @@ def dagster_instance_config(base_dir, config_filename=DAGSTER_CONFIG_YAML_FILENA
     dagster_config_dict = merge_dicts(
         load_yaml_from_globs(os.path.join(base_dir, config_filename)), overrides
     )
-    dagster_config_type = define_dagster_config_cls()
-    dagster_config = validate_config(dagster_config_type, dagster_config_dict)
+    instance_config_type = define_dagster_instance_config_cls()
+    instance_config_dict = {
+        k: v for k, v in dagster_config_dict.items() if k in instance_config_type.fields
+    }
+    dagster_config = validate_config(instance_config_type, instance_config_dict)
     if not dagster_config.success:
         raise DagsterInvalidConfigError(
             'Errors whilst loading dagster instance config at {}.'.format(config_filename),
@@ -38,7 +40,7 @@ def config_field_for_configurable_class(name, **field_opts):
     )
 
 
-def define_dagster_config_cls():
+def define_dagster_instance_config_cls():
     return SystemNamedDict(
         'DagsterInstanceConfig',
         {

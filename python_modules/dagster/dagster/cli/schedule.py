@@ -7,9 +7,10 @@ import six
 
 from dagster import DagsterInvariantViolationError, check
 from dagster.cli.load_handle import handle_for_repo_cli_args
-from dagster.core.instance import DagsterInstance, _is_dagster_home_set
+from dagster.core.instance import DagsterInstance
 from dagster.core.scheduler import ScheduleStatus
 from dagster.utils import DEFAULT_REPOSITORY_YAML_FILENAME
+from dagster.utils.config import is_dagster_home_set
 
 
 def create_schedule_cli_group():
@@ -145,7 +146,7 @@ def schedule_up_command(preview, **kwargs):
 
 
 def execute_up_command(preview, cli_args, print_fn):
-    if not _is_dagster_home_set():
+    if not is_dagster_home_set():
         raise click.UsageError(dagster_home_error_message_for_command('dagster schedule up'))
 
     handle = handle_for_repo_cli_args(cli_args)
@@ -186,7 +187,7 @@ def schedule_list_command(running, stopped, name, verbose, **kwargs):
 
 
 def execute_list_command(running_filter, stopped_filter, name_filter, verbose, cli_args, print_fn):
-    if not _is_dagster_home_set():
+    if not is_dagster_home_set():
         raise click.UsageError(dagster_home_error_message_for_command('dagster schedule list ...'))
 
     handle = handle_for_repo_cli_args(cli_args)
@@ -263,7 +264,7 @@ def schedule_start_command(schedule_name, start_all, **kwargs):
 
 
 def execute_start_command(schedule_name, all_flag, cli_args, print_fn):
-    if not _is_dagster_home_set():
+    if not is_dagster_home_set():
         raise click.UsageError(dagster_home_error_message_for_command('dagster schedule start ...'))
 
     handle = handle_for_repo_cli_args(cli_args)
@@ -307,7 +308,7 @@ def schedule_stop_command(schedule_name, **kwargs):
 
 
 def execute_stop_command(schedule_name, cli_args, print_fn):
-    if not _is_dagster_home_set():
+    if not is_dagster_home_set():
         raise click.UsageError(dagster_home_error_message_for_command('dagster schedule stop ...'))
 
     handle = handle_for_repo_cli_args(cli_args)
@@ -349,7 +350,7 @@ def schedule_restart_command(schedule_name, restart_all_running, **kwargs):
 
 
 def execute_restart_command(schedule_name, all_running_flag, cli_args, print_fn):
-    if not _is_dagster_home_set():
+    if not is_dagster_home_set():
         raise click.UsageError(
             dagster_home_error_message_for_command('dagster schedule restart ...')
         )
