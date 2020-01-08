@@ -20,6 +20,7 @@ metadata:
   name: dagster-job-{run_id}
 spec:
   backoff_limit: 4
+  ttl_seconds_after_finished: 100
   template:
     metadata:
       labels:
