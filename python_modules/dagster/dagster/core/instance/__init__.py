@@ -15,25 +15,10 @@ from dagster.core.serdes import ConfigurableClass, whitelist_for_serdes
 from dagster.core.storage.pipeline_run import PipelineRun
 from dagster.core.types import String
 from dagster.core.types.config import Field, PermissiveDict
+from dagster.utils.config import DAGSTER_CONFIG_YAML_FILENAME, dagster_home, is_dagster_home_set
 from dagster.utils.yaml_utils import load_yaml_from_globs
 
-from .config import DAGSTER_CONFIG_YAML_FILENAME
 from .ref import InstanceRef, _compute_logs_directory
-
-
-def _is_dagster_home_set():
-    return bool(os.getenv('DAGSTER_HOME'))
-
-
-def _dagster_home():
-    dagster_home_path = os.getenv('DAGSTER_HOME')
-
-    if not dagster_home_path:
-        raise DagsterInvariantViolationError(
-            'DAGSTER_HOME is not set, check is_dagster_home_set before invoking.'
-        )
-
-    return os.path.expanduser(dagster_home_path)
 
 
 class _EventListenerLogHandler(logging.Handler):
@@ -141,8 +126,8 @@ class DagsterInstance:
     @staticmethod
     def get(fallback_storage=None):
         # 1. Use $DAGSTER_HOME to determine instance if set.
-        if _is_dagster_home_set():
-            return DagsterInstance.from_config(_dagster_home())
+        if is_dagster_home_set():
+            return DagsterInstance.from_config(dagster_home())
 
         # 2. If that is not set use the fallback storage directory if provided.
         # This allows us to have a nice out of the box dagit experience where runs are persisted

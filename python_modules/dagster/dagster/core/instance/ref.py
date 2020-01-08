@@ -5,8 +5,9 @@ import yaml
 
 from dagster import check
 from dagster.core.serdes import ConfigurableClassData, whitelist_for_serdes
+from dagster.utils.config import DAGSTER_CONFIG_YAML_FILENAME
 
-from .config import DAGSTER_CONFIG_YAML_FILENAME, dagster_instance_config
+from .config import dagster_instance_config
 
 
 def _runs_directory(base):
